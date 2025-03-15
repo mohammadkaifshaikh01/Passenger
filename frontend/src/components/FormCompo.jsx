@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { ContextProvider } from '../Context/ContextApi';
 
-const Form = () => {
+const FormData = () => {
   const { formData, setFormData } = useContext(ContextProvider);
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
@@ -143,4 +143,4 @@ const Form = () => {
   );
 };
 
-export default Form;
+export default FormData;
