@@ -10,7 +10,7 @@ passengerRouter.post(
   "/passengerData",
   upload.fields([
     { name: "photo", maxCount: 1 },
-    { name: "idcard", maxCount: 1 }
+    { name: "idcard", maxCount: 1 },
   ]),
   async (req, res) => {
     try {
@@ -20,14 +20,19 @@ passengerRouter.post(
       const { name, email, gender, age, contact } = req.body;
 
       if (!req.files || !req.files.photo || !req.files.idcard) {
-        return res.status(400).json({ message: "Photo and ID Card (PDF) are required" });
+        return res
+          .status(400)
+          .json({ message: "Photo and ID Card (PDF) are required" });
       }
 
       const photoPath = req.files.photo[0].path;
       const idcardPath = req.files.idcard[0].path;
 
-      const photoUploadResponse = await uploadOnCloudinary(photoPath);
-      const idcardUploadResponse = await uploadOnCloudinary(idcardPath);
+      const photoUploadResponse = await uploadOnCloudinary(photoPath, "photo");
+      const idcardUploadResponse = await uploadOnCloudinary(
+        idcardPath,
+        "idcard"
+      );
 
       const passenger = new passengerModel({
         name,
@@ -35,8 +40,10 @@ passengerRouter.post(
         gender,
         age,
         contact,
-        photo: photoUploadResponse?.url,
-        idcard: idcardUploadResponse?.url
+        photo: photoUploadResponse
+          ? photoUploadResponse.url
+          : "https://media.istockphoto.com/id/1495088043/vector/user-profile-icon-avatar-or-person-icon-profile-picture-portrait-symbol-default-portrait.jpg?s=612x612&w=0&k=20&c=dhV2p1JwmloBTOaGAtaA3AW1KSnjsdMt7-U_3EZElZ0=",
+        idcard: idcardUploadResponse?.url,
       });
 
       const result = await passenger.save();
@@ -73,7 +80,7 @@ passengerRouter.get("/passengerData/:id", async (req, res) => {
   }
 });
 
-// DELETE: Delete a passenger by ID   
+// DELETE: Delete a passenger by ID
 passengerRouter.delete("/passengerData/:id", async (req, res) => {
   try {
     const passenger = await passengerModel.findById(req.params.id);
