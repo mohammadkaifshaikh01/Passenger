@@ -1,7 +1,7 @@
 
 
 import './App.css'
-import Form from './component/form'
+import Form from './components/form'
 
 function App() {
 
